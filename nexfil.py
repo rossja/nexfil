@@ -76,15 +76,21 @@ import tldextract
 from json import loads
 from datetime import datetime
 from requests import get, exceptions
-from os import getenv, path, makedirs
+from os import getenv, path, makedirs, getcwd
+from sys import platform
 
+if platform == 'win32':
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    home = getcwd()
+else:
+    home = getenv('HOME')
+    
 gh_version = ''
 twitter_url = ''
 discord_url = ''
 author_name = ''
 found = []
 codes = [200, 301, 302, 403, 405, 410, 418, 500]
-home = getenv('HOME')
 loc_data = home + '/.local/share/nexfil/dumps/'
 
 def fetch_meta():
@@ -360,7 +366,7 @@ try:
     banner()
     
     print(f'{Y}[!] Loading URLs...{W}')
-    with open('url_store.json', 'r') as url_store:
+    with open('url_store.json', 'r', encoding='utf-8') as url_store:
         raw_data = url_store.read()
         urls_json = loads(raw_data)
     print(f'{G}[+] {W}{len(urls_json)} {C}URLs Loaded!{W}')
